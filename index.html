@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>GAE Demo App</title>
+	<link rel="stylesheet" type="text/css" href="static/styles.css">
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBK79Fu6_v68AMAr1LUkwwpq4j-Oc9wyp4"></script>
+	<script src="static/script.js"></script>
+	<script src="http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojsonp"></script>
+</head>
+<body>
+	<h1>{{ title | safe }}</h1>
+	<div id="map"></div>
+	<script type="text/javascript">
+		initMap();
+	</script>
+	<script src="https://developers.google.com/maps/documentation/javascript/examples/json/earthquake_GeoJSONP.js"></script>
+</body>
+</html>
