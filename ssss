@@ -1,0 +1,60 @@
+[1mdiff --git a/server.py b/server.py[m
+[1mindex 6240054..ac49dd7 100644[m
+[1m--- a/server.py[m
+[1m+++ b/server.py[m
+[36m@@ -4,6 +4,7 @@[m [mimport ee[m
+ import webapp2[m
+ import jinja2[m
+ import os[m
+[32m+[m[32mimport json[m
+ [m
+ EE_ACCOUNT = 'ecodash-beta@appspot.gserviceaccount.com'[m
+ EE_PRIVATE_KEY_FILE = 'privatekey.pem'[m
+[36m@@ -17,7 +18,6 @@[m [mJINJA2_ENVIRONMENT = jinja2.Environment([m
+ 	extensions=['jinja2.ext.autoescape'][m
+ )[m
+ [m
+[31m-[m
+ class MainHandler(webapp2.RequestHandler):[m
+ 	def get(self):[m
+ 		template_values = {[m
+[36m@@ -27,7 +27,38 @@[m [mclass MainHandler(webapp2.RequestHandler):[m
+ 		self.response.out.write(template.render(template_values))[m
+ [m
+ [m
+[32m+[m
+[32m+[m[32mclass GetMapHandler(webapp2.RequestHandler):[m
+[32m+[m[32m    def get(self):[m
+[32m+[m[41m	[m
+[32m+[m	[32mstart_date = '2000-01-01'[m
+[32m+[m	[32mend_date = '2001-01-01'[m
+[32m+[m
+[32m+[m	[32mcollection = ee.ImageCollection("MODIS/MYD13A1")[m
+[32m+[m	[32mreference = collection.filterDate(start_date, end_date).sort("system:time_start").select("EVI")[m
+[32m+[m	[32mmymean = reference.mean()[m
+[32m+[m[41m	[m
+[32m+[m	[32mcountries = ee.FeatureCollection('ft:1tdSwUL7MVpOauSgRzqVTOwdfy17KDbw-1d9omPw')[m
+[32m+[m	[32mcountry_names = ['Myanmar (Burma)','Thailand','Laos','Vietnam','Cambodia'][m
+[32m+[m	[32mmekongCountries = countries.filter(ee.Filter.inList('Country', country_names))[m
+[32m+[m	[32mfit = mymean.clip(mekongCountries)[m[41m	[m
+[32m+[m
+[32m+[m	[32mmapid = fit.getMapId({[m
+[32m+[m[41m      [m		[32m'min': '-400',[m
+[32m+[m[41m      [m		[32m'max': '400',[m
+[32m+[m[41m      [m		[32m'bands': ' EVI_mean',[m
+[32m+[m[41m      [m		[32m'palette' : '931206,ff1b05,fdff42,4bff0f,0fa713'[m
+[32m+[m[41m  [m	[32m})[m
+[32m+[m
+[32m+[m	[32mmap_results = {[m
+[32m+[m		[32m'eeMapId': mapid['mapid'],[m
+[32m+[m		[32m'eeToken': mapid['token'][m
+[32m+[m
+[32m+[m	[32m}[m
+[32m+[m	[32mself.response.headers['Content-Type'] = 'application/json'[m
+[32m+[m	[32mself.response.out.write(json.dumps(map_results))[m
+[32m+[m
+ app = webapp2.WSGIApplication([                             [m
+[31m-#	('/getmap', GetMapHandler),                               [m
+[32m+[m	[32m('/getmap', GetMapHandler),[m[41m                               [m
+ 	('/', MainHandler)]                                       [m
+ 	 )   [m
